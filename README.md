@@ -52,8 +52,14 @@ The legacy JAR that lacks the `v26_1_R3` internals implementation cannot run on 
 26.1.2. This repository's CI builds a separate Minecraft 26 JAR named
 `realisticsurvival-1.2.9-RELEASE-mc26.jar`.
 
-To download it, open the [Build workflow](https://github.com/relaymann/RealisticSurvivalPluginFixed/actions/workflows/build.yml),
-choose the latest successful run, and download the `realisticsurvival-mc26-jar` artifact.
+This project publishes the built JAR directly to the dedicated
+[`mc26-builds` branch](https://github.com/relaymann/RealisticSurvivalPluginFixed/tree/mc26-builds),
+instead of relying on temporary GitHub Actions artifacts. After a successful push or
+manual workflow run, download
+[RealisticSurvival-1.2.9-RELEASE-Paper-26.1.2.jar](https://github.com/relaymann/RealisticSurvivalPluginFixed/raw/refs/heads/mc26-builds/RealisticSurvival-1.2.9-RELEASE-Paper-26.1.2.jar).
+The branch also includes a SHA-256 checksum and build information. The branch is created
+automatically the first time a publishing build succeeds.
+
 Use one RealisticSurvival JAR only: back up your server, remove the old JAR from
 `plugins`, and install the compatibility JAR in a staging copy before production.
 A successful build verifies compilation and required JAR contents; it does not replace

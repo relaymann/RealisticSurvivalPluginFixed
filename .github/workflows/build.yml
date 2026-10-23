@@ -11,10 +11,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: realistic-survival-mc26-${{ github.ref }}
+  group: realistic-survival-mc26-${{ github.repository }}
   cancel-in-progress: true
 
 jobs:
@@ -51,10 +51,8 @@ jobs:
         shell: bash
         run: bash .github/ci/verify-mc26-jar.sh
 
-      - name: Upload compatibility JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: realisticsurvival-mc26-jar
-          path: target/realisticsurvival-*-mc26.jar
-          if-no-files-found: error
-          retention-days: 14
+      - name: Publish JAR to the mc26-builds branch
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/ci/publish-mc26-jar.sh
