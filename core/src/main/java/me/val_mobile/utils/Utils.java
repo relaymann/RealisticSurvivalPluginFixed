@@ -61,7 +61,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,15 +104,33 @@ public class Utils {
 
     private final RSVPlugin plugin;
 
-    private static InternalsProvider internals;
+    private static final InternalsProvider internals;
 
     static {
+        String serverVersion = Bukkit.getVersion();
+        String implementationName = getMinecraftVersion(true);
+        String packageName = Utils.class.getPackage().getName();
+
         try {
-            String packageName = Utils.class.getPackage().getName();
-//            String internalsName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-            internals = (InternalsProvider) Class.forName(packageName + "." + getMinecraftVersion(true)).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException | NoSuchMethodException | InvocationTargetException exception) {
-            Bukkit.getLogger().log(Level.SEVERE, "NMS Util could not find a valid implementation for this server version.");
+            internals = (InternalsProvider) Class.forName(packageName + "." + implementationName)
+                    .getDeclaredConstructor()
+                    .newInstance();
+
+            Bukkit.getLogger().info("[RealisticSurvival] Loaded NMS provider " + implementationName
+                    + " for server " + serverVersion + ".");
+        } catch (ReflectiveOperationException | ClassCastException | LinkageError exception) {
+            Throwable cause = exception instanceof InvocationTargetException invocation
+                    && invocation.getCause() != null
+                    ? invocation.getCause()
+                    : exception;
+
+            throw new ExceptionInInitializerError(new IllegalStateException(
+                    "RealisticSurvival could not load NMS provider '" + implementationName
+                            + "' for server '" + serverVersion + "'. Install a RealisticSurvival build "
+                            + "that explicitly supports this Minecraft version; the plugin cannot continue "
+                            + "safely without its internal compatibility provider.",
+                    cause
+            ));
         }
     }
 

@@ -1,16 +1,25 @@
-name: build
+name: Build RealisticSurvival for Minecraft 26.1.2
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+      - "fix/**"
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: realistic-survival-mc26-${{ github.repository }}-${{ github.event_name }}
+  cancel-in-progress: true
 
 jobs:
   jar:
     runs-on: ubuntu-latest
-    # Builds the MC 26-only jar (dist26). First run builds Spigot 26.1.2 with
-    # BuildTools (~10 min); afterwards the Maven repository cache makes this a
-    # few minutes.
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -29,18 +38,21 @@ jobs:
           restore-keys: |
             m2-
 
-      - name: Install Spigot artifacts with BuildTools
+      - name: Install Spigot 26.1.2 with BuildTools
         run: bash .github/ci/run-buildtools.sh "$GITHUB_WORKSPACE"
 
-      - name: Generate RealisticSeasons compile stub
+      - name: Generate compile-only RealisticSeasons API stub
         run: bash .github/ci/make-realisticseasons-stub.sh
 
-      - name: Build plugin (MC 26 only)
+      - name: Build plugin for Minecraft 26
         run: mvn -B -ntp -DskipTests -pl dist26 -am package
 
-      - name: Upload plugin jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: realisticsurvival-mc26-jar
-          path: target/realisticsurvival-*-mc26.jar
-          if-no-files-found: error
+      - name: Verify compatibility JAR contents
+        shell: bash
+        run: bash .github/ci/verify-mc26-jar.sh
+
+      - name: Publish JAR to the mc26-builds branch
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/ci/publish-mc26-jar.sh
