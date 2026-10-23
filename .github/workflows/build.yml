@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: realistic-survival-mc26-${{ github.repository }}
+  group: realistic-survival-mc26-${{ github.repository }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
