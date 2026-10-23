@@ -1,0 +1,9 @@
+Product: RealisticSurvival 1.2.9-RELEASE
+Target: Paper 26.1.2 / Minecraft 26.1.2
+Source repository: https://github.com/relaymann/RealisticSurvivalPluginFixed
+Source commit: a2f4b4d32289c92428b15ba5805bcdadf1ea1301
+Workflow run: https://github.com/relaymann/RealisticSurvivalPluginFixed/actions/runs/39958235541
+Build time UTC: 2026-10-23T13:08:01Z
+
+This file records build provenance only. A successful compile and JAR-content
+check are not a substitute for in-game testing on a staging Paper 26.1.2 server.
